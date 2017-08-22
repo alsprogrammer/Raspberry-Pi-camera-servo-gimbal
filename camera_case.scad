@@ -1,3 +1,14 @@
+b = 17;
+w = 17;
+mink = 5;
+mnk_h = 0.1;
+
+dist_btw_screw_holes = 25;
+servo_out = 31;
+servo_hole_r = 11;
+
+h=5;
+
 mink_r_ = 2;
 luft = 0.1;
 
@@ -56,11 +67,34 @@ module camera_case() {
                 screw_stand();
             translate([0, plate_width - stand_width + luft, 0])
                 screw_stand();
+            
+            translate([0, plate_width / 2, mink - mink_r_])
+                rotate([0, -90, 0])
+                    holder();
         }
         translate([lens_window_x, lens_window_y, - mink_r_])
             cylinder(d=lens_hole_d + luft, h=mink_r_, $fn=50);
         translate([plate_length + luft, (plate_width - cable_width) / 2 - luft, plate_whole_height - cable_step])
             cube([mink_r_ + luft, cable_width + 2 * luft, cable_step]);
+    }
+}
+
+module holder() {
+    difference() {
+        // outer outline
+        minkowski() {
+            linear_extrude(height=h, convexity=10, twist=0)
+                polygon(points=[[0,plate_width / 2 - mink],[servo_out, dist_btw_screw_holes / 2],[servo_out, - dist_btw_screw_holes / 2], [0,-plate_width / 2 + mink]], paths=[[0,1,2,3]]);
+            cylinder(r=mink, h=mnk_h);
+        }
+        
+        translate([servo_out + mink / 2, 0, 0])
+            cylinder(r=servo_hole_r, h=h+mnk_h, $fn=50);
+        
+        translate([servo_out, dist_btw_screw_holes / 2, 0])
+            cylinder(d=screw_d, h=h+mnk_h);
+        translate([servo_out, - dist_btw_screw_holes / 2, 0])
+            cylinder(d=screw_d, h=h+mnk_h);
     }
 }
 
